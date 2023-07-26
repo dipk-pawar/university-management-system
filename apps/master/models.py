@@ -100,6 +100,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         null=True,
         on_delete=models.CASCADE,
     )
+    country = models.ForeignKey(
+        "master.Country",
+        to_field="id",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
