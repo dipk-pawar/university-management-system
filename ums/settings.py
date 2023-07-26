@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,12 +27,14 @@ SECRET_KEY = "django-insecure-%)jw-1p#-=(zxtf03a2+y$!0k8o73&z@38n=$=6c3rtv&o=25*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
-INSTALLED_APPS = [
+SHARED_APPS = [
+    "apps.master",
+    "django_tenants",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -40,7 +43,19 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
+TENANT_APPS = ["apps.accounts", "apps.common"]
+
+INSTALLED_APPS = [
+    *SHARED_APPS,
+    *[app for app in TENANT_APPS if app not in SHARED_APPS],
+    "rest_framework",
+    "corsheaders",
+    "rest_framework_simplejwt",
+]
+
 MIDDLEWARE = [
+    "apps.master.middleware.RequestIDTenantMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -50,7 +65,30 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+# REST_FRAMEWORK = {
+#     "DEFAULT_AUTHENTICATION_CLASSES": [
+#         "rest_framework_simplejwt.authentication.JWTAuthentication",
+#         # Other authentication classes if needed
+#     ],
+#     "DEFAULT_PERMISSION_CLASSES": [
+#         "rest_framework.permissions.IsAuthenticated",
+#         # Other permission classes if needed
+#     ],
+# }
+
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
+TENANT_MODEL = "master.University"  # app.Model
+
+TENANT_DOMAIN_MODEL = "master.Domain"
+
+AUTH_USER_MODEL = "master.User"
+
 ROOT_URLCONF = "ums.urls"
+
+SHOW_PUBLIC_IF_NO_TENANT_FOUND = True
 
 TEMPLATES = [
     {
@@ -76,8 +114,12 @@ WSGI_APPLICATION = "ums.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django_tenants.postgresql_backend",
+        "NAME": config("NAME"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST"),
+        "PORT": config("DB_PORT"),
     }
 }
 
@@ -100,6 +142,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
