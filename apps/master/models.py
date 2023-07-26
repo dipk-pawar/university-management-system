@@ -63,12 +63,37 @@ class University(TenantMixin, models.Model):
         verbose_name_plural = "Universities"
 
 
+class Role(models.Model):
+    title = models.CharField(max_length=50)
+    descriptions = models.CharField(max_length=250, default=None, blank=True, null=True)
+    university = models.ForeignKey(
+        "master.University",
+        to_field="uid",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+
+
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=30)
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    university = models.ForeignKey(
+        "master.University",
+        to_field="uid",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    role = models.ForeignKey(
+        "master.Role",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
