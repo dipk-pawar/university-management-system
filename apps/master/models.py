@@ -62,6 +62,9 @@ class University(TenantMixin, models.Model):
     class Meta:
         verbose_name_plural = "Universities"
 
+    def __str__(self) -> str:
+        return self.university_name
+
 
 class Role(models.Model):
     title = models.CharField(max_length=50)
@@ -73,6 +76,9 @@ class Role(models.Model):
         blank=True,
         on_delete=models.CASCADE,
     )
+
+    def __str__(self) -> str:
+        return self.title
 
 
 # Create your models here.
@@ -117,5 +123,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.first_name
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.email
