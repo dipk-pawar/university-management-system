@@ -5,6 +5,7 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django_tenants.models import DomainMixin, TenantMixin
+from apps.common.models import CommonUser, TimeStampModel
 
 
 class CustomUserManager(BaseUserManager):
@@ -81,44 +82,14 @@ class Role(models.Model):
         return self.title
 
 
-# Create your models here.
-class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=30)
+class User(AbstractBaseUser, CommonUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    university = models.ForeignKey(
-        "master.University",
-        to_field="uid",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-    )
-    role = models.ForeignKey(
-        "master.Role",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE,
-    )
-    country = models.ForeignKey(
-        "master.Country",
-        to_field="id",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-    )
-    is_verified = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-
     # required fields for
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"
