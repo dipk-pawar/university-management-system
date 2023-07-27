@@ -21,6 +21,20 @@ class CommonUser(TimeStampModel):
         blank=True,
         on_delete=models.CASCADE,
     )
+    college = models.ForeignKey(
+        "master.College",
+        to_field="id",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    department = models.ForeignKey(
+        "master.Department",
+        to_field="id",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
     role = models.ForeignKey(
         "master.Role",
         blank=True,

@@ -42,23 +42,19 @@ class Country(models.Model):
 
 class University(TenantMixin, models.Model):
     uid = models.UUIDField(primary_key=True, editable=True)
-    university_name = models.CharField(max_length=100)
-    university_email = models.EmailField(default=None, blank=True, null=True)
-    university_address = models.CharField(max_length=250)
-    university_country = models.ForeignKey(
+    name = models.CharField(max_length=100)
+    email = models.EmailField(default=None, blank=True, null=True)
+    address = models.CharField(max_length=250)
+    country = models.ForeignKey(
         Country,
         to_field="id",
         related_name="university_country_id",
         on_delete=models.CASCADE,
     )
-    university_postal_code = models.CharField(max_length=50)
-    university_contact_no = models.CharField(
-        max_length=50, default=None, blank=True, null=True
-    )
-    university_website = models.URLField(default=None, blank=True, null=True)
-    university_descriptions = models.CharField(
-        max_length=250, default=None, blank=True, null=True
-    )
+    postal_code = models.CharField(max_length=50)
+    contact_no = models.CharField(max_length=50, default=None, blank=True, null=True)
+    website = models.URLField(default=None, blank=True, null=True)
+    descriptions = models.CharField(max_length=250, default=None, blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Universities"
@@ -67,12 +63,48 @@ class University(TenantMixin, models.Model):
         return self.university_name
 
 
-class Role(models.Model):
+class College(TimeStampModel):
+    name = models.CharField(max_length=100)
+    location = models.CharField(max_length=200)
+    university = models.ForeignKey(
+        "master.University", on_delete=models.CASCADE, related_name="colleges"
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Department(TimeStampModel):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    college = models.ForeignKey(
+        "master.College", on_delete=models.CASCADE, related_name="departments"
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class Role(TimeStampModel):
     title = models.CharField(max_length=50)
     descriptions = models.CharField(max_length=250, default=None, blank=True, null=True)
     university = models.ForeignKey(
         "master.University",
         to_field="uid",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    college = models.ForeignKey(
+        "master.College",
+        to_field="id",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
+    department = models.ForeignKey(
+        "master.Department",
+        to_field="id",
         null=True,
         blank=True,
         on_delete=models.CASCADE,
