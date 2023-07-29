@@ -44,14 +44,16 @@ class University(TenantMixin, models.Model):
     uid = models.UUIDField(primary_key=True, editable=True)
     name = models.CharField(max_length=100)
     email = models.EmailField(default=None, blank=True, null=True)
-    address = models.CharField(max_length=250)
+    address = models.CharField(max_length=250, blank=True, null=True)
     country = models.ForeignKey(
-        Country,
+        "master.Country",
         to_field="id",
+        null=True,
+        blank=True,
         related_name="university_country_id",
         on_delete=models.CASCADE,
     )
-    postal_code = models.CharField(max_length=50)
+    postal_code = models.CharField(max_length=50, blank=True, null=True)
     contact_no = models.CharField(max_length=50, default=None, blank=True, null=True)
     website = models.URLField(default=None, blank=True, null=True)
     descriptions = models.CharField(max_length=250, default=None, blank=True, null=True)
@@ -69,7 +71,6 @@ class User(AbstractBaseUser, CommonUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
     is_superadmin = models.BooleanField(default=False)
     objects = CustomUserManager()
 

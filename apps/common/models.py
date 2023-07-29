@@ -80,6 +80,8 @@ class CommonUser(TimeStampModel):
         blank=True,
         on_delete=models.CASCADE,
     )
+    is_staff = models.BooleanField(default=False)
+    is_universityadmin = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
