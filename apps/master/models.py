@@ -5,7 +5,11 @@ from django.contrib.auth.models import (
 )
 from django.db import models
 from django_tenants.models import DomainMixin, TenantMixin
-from apps.common.models import CommonUser, TimeStampModel
+from apps.common.models import CommonUser
+from apps.common.helper.common_helper import (
+    generate_random_password,
+    generate_random_username,
+)
 
 
 class CustomUserManager(BaseUserManager):
@@ -13,8 +17,12 @@ class CustomUserManager(BaseUserManager):
         if not extra_fields.get("email"):
             raise ValueError("The Email field must be set")
         extra_fields["email"] = self.normalize_email(extra_fields.get("email"))
+        extra_fields["username"] = generate_random_username(
+            first_name=extra_fields["first_name"], last_name=extra_fields["first_name"]
+        )
         user = self.model(**extra_fields)
-        user.set_password(extra_fields.get("password"))
+        password = generate_random_password(12)
+        user.set_password(password)
         user.save(using=self._db)
         return user
 
