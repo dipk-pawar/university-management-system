@@ -63,57 +63,6 @@ class University(TenantMixin, models.Model):
         return self.university_name
 
 
-class College(TimeStampModel):
-    name = models.CharField(max_length=100)
-    location = models.CharField(max_length=200)
-    university = models.ForeignKey(
-        "master.University", on_delete=models.CASCADE, related_name="colleges"
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class Department(TimeStampModel):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    college = models.ForeignKey(
-        "master.College", on_delete=models.CASCADE, related_name="departments"
-    )
-
-    def __str__(self):
-        return self.name
-
-
-class Role(TimeStampModel):
-    title = models.CharField(max_length=50)
-    descriptions = models.CharField(max_length=250, default=None, blank=True, null=True)
-    university = models.ForeignKey(
-        "master.University",
-        to_field="uid",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-    )
-    college = models.ForeignKey(
-        "master.College",
-        to_field="id",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-    )
-    department = models.ForeignKey(
-        "master.Department",
-        to_field="id",
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self) -> str:
-        return self.title
-
-
 class User(AbstractBaseUser, CommonUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     # required fields for
