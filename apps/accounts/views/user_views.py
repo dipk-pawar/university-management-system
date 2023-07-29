@@ -68,10 +68,10 @@ class CreateUniversityAndUser(generics.CreateAPIView):
                 "data": [
                     {
                         "user_id": user_obj.get("id"),
-                        "email": user_obj.get("email"),
                         "first_name": user_obj.get("first_name"),
-                        "last_name": user_obj.get("last_name"),
                         "middle_name": user_obj.get("middle_name"),
+                        "last_name": user_obj.get("last_name"),
+                        "email": user_obj.get("email"),
                         "university_name": user_obj.get("university_id__name"),
                     }
                 ],

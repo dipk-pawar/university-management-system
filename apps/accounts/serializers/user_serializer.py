@@ -3,6 +3,8 @@ from apps.master.models import User as public_users
 
 
 class UserSerializer(serializers.ModelSerializer):
+    middle_name = serializers.CharField(max_length=30)
+
     class Meta:
         model = public_users
         fields = (
